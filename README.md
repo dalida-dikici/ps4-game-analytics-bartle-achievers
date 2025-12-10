@@ -1,161 +1,133 @@
-# PS4 Game Analytics & Player-Type Based Recommendation
+# PS4 Game Analytics & Player-Type Based Recommendation (Bartle Achievers)
 
-This repository contains a game analytics project completed as the final project of the **Big Data & Business Analytics** certificate program at Istanbul Technical University (İTÜ).
+This repository contains my final project for the **Istanbul Technical University (ITU) Big Data & Business Analytics Certification Program**.
 
-The project focuses on understanding **player behavior and game popularity** using a real-world PlayStation 4 games dataset and building **predictive and classification models** to support game recommendation scenarios.
-
----
-
-## 🎯 Project Objectives
-
-- Analyze a PS4 games dataset from the [TrueTrophies](https://truetrophies.com/) website (via Kaggle).
-- Understand which features drive **game ratings** and **popularity**.
-- Classify games based on their suitability for **"Achiever" player type** (Bartle’s taxonomy).
-- Compare different models and translate the results into **business-oriented recommendations** (player retention, personalized game suggestions).
+The project focuses on **PS4 games analytics** using a real-world dataset and explores how game metrics relate to player motivations, specifically the **"Achiever"** player type from Bartle’s taxonomy.
 
 ---
 
-## 📊 Dataset
+## 1. Business Context
 
-- **Source:** [Kaggle – PS4 Games Dataset](https://www.kaggle.com/datasets/ww1234/ps4-games)
-- **Size:** 1,584 rows, 9 columns  
-- **Context:** PS4 games collected from the TrueTrophies website  
-- **Examples of features:**
-  - `rating` – overall game rating
-  - `score` – trophy/achievement score
-  - `comp-perc` – completion percentage
-  - `leaderboard` – ranking-related metrics
-  - Various trophy-related statistics
+The dataset includes PlayStation 4 games and key engagement/performance metrics (scores, completion rates, ratings, time to complete, etc.).  
+The goal of this project is to:
 
-> **Note:** The raw dataset is not redistributed in this repository due to licensing.  
-> You can download it directly from Kaggle using the link above.
+- Understand which factors drive **game popularity (rating)**.
+- Explore how **trophy/score structure** may appeal to **Achiever-type players**.
+- Build simple **predictive and classification models** that could support:
+  - Game recommendation,
+  - Player segmentation,
+  - Long-term engagement and monetization strategies.
 
 ---
 
-## 🔍 Methods & Workflow
+## 2. Dataset
 
-The analysis was performed using **KNIME Analytics Platform** with a customer/behavioral analytics perspective.
+Source: [Kaggle – PS4 Games Dataset](https://www.kaggle.com/datasets/ww1234/ps4-games)
 
-### 1. Exploratory Data Analysis (EDA)
+- **Rows:** 1,584
+- **Columns:** 9
+- Example fields:
+  - `title` – Game name  
+  - `score` – Maximum achievable score / trophies  
+  - `leaderboard` – Number of players on the leaderboard  
+  - `gamers` – Number of registered players  
+  - `comp_perc` – Completion percentage  
+  - `rating` – Popularity rating  
+  - `min_comp_time`, `max_comp_time` – Estimated time to fully complete the game  
 
-- Loaded the CSV dataset into KNIME.
-- Verified **missing values** (none in this dataset).
-- Generated basic **descriptive statistics** (`mean`, `median`, `std`, histograms).
-- Used:
-  - `Statistics` node for summary stats
-  - `Linear Correlation` to inspect relationships between variables
-  - `Scatter Matrix` to visualize pairwise relationships
-  - `Box Plot` (focused on `rating` distribution)
-
-Key insight:  
-- Positive correlation between **`score`** and **`leaderboard`**  
-- Negative correlation between **`score`** and **`comp-perc`**  
-  → As players collect more trophies, the completion rate tends to drop.
-
-### 2. Problem Definition
-
-The project is framed around:
-
-- **Game popularity modeling** (via `rating`)
-- **Player-type–based game recommendation**, focusing on the **Achiever** type from **Bartle’s player taxonomy**.
-
-Using literature on player types and motivation, the project connects data patterns with:
-
-- Achievers (motivated by trophies/progression)
-- Other player types (Explorers, Socializers, Killers – considered for future work)
+No missing values were reported in the original dataset.
 
 ---
 
-## 🤖 Models
+## 3. Methods & Tools
 
-Three main models were built and compared.
+The original analysis was performed using **KNIME Analytics Platform**, with the following main steps:
 
-### 1️⃣ Linear Regression – Predicting Game Rating
+1. **Descriptive Analytics & EDA**
+   - Summary statistics
+   - Histograms and boxplots
+   - Correlation analysis and scatter matrices
 
-- **Target:** `rating`
-- **Goal:** Find which features best explain game rating.
-- **Process:**
-  - Train–test split (e.g. ~76% training, ~24% test)
-  - Used KNIME’s `Linear Regression Learner` and `Linear Regression Predictor`.
-- **Evaluation Metrics:**
-  - Mean Squared Error (MSE)
-  - Mean Absolute Error (MAE)
-  - R² (coefficient of determination)
+2. **Feature Understanding**
+   - Relationship between `rating` and other variables
+   - Relationship between `score`, `leaderboard`, and `comp_perc`
 
-### 2️⃣ Logistic Regression – Classifying “Achiever-Friendly” Games
+3. **Modeling (Machine Learning)**  
+   Three models were built:
 
-- **Target:** Newly engineered categorical variable representing **Achiever suitability**.
-- **Feature Engineering:**
-  - `Rule Engine` used to transform the `score` variable into a categorical `Bartle Player`–like label based on histogram and thresholds.
-- **Learning Process:**
-  - **K-Fold Cross Validation** (k=5) for more robust performance estimation.
-  - **Forward Feature Selection** meta-node to find the best subset of features.
-- **Output:**
-  - A probabilistic classification of whether a game is likely to appeal to Achiever-type players.
+   - **Linear Regression**
+     - Target: `rating`
+     - Goal: Identify which variables best explain game popularity.
 
-### 3️⃣ Decision Tree – Achiever Classification (Best Performing Model)
+   - **Logistic Regression**
+     - Target: Player-type related classification (Achiever-focused)
+     - Goal: Classify games as more/less suitable for Achiever-type players.
 
-- Same target as Logistic Regression (Achiever vs. Non-Achiever).
-- Used:
-  - `Partitioning` (e.g. 80% train / 20% test)
-  - Decision Tree learner node in KNIME.
-- **Result:**  
-  - Achieved the best **classification performance** among the three models.
-  - Offered interpretable rules (e.g. threshold-based splits on score and completion metrics).
+   - **Decision Tree**
+     - Same classification task as Logistic Regression
+     - Optimized using **Forward Feature Selection**.
 
----
+4. **Model Evaluation**
+   - Regression: MSE, MAE, R²
+   - Classification: Accuracy  
+   - Cross-validation (K-Fold) used for more robust evaluation.
 
-## 📏 Model Evaluation
-
-Models were compared using:
-
-- **Regression:** MSE, MAE, R²  
-- **Classification:** Accuracy and validation performance
-
-> Overall, the **Decision Tree classifier** delivered the strongest performance for the Achiever classification task, while Linear Regression provided interpretable insights into rating drivers.
+5. **Player Typology**
+   - The project is grounded in **Bartle’s player types** (Achievers, Explorers, Socializers, Killers).
+   - The focus is on **Achievers**, who are highly motivated by trophies, progress bars, and completion challenges.
 
 ---
 
-## 💡 Business & Analytics Insights
+## 4. Key Insights (High Level)
 
-From a **customer / player analytics** perspective:
+- Strong positive correlation between **score** and **leaderboard**:
+  - Games with more trophies/scores tend to have more players on the leaderboard.
 
-- Games with high trophy scores but low completion rates may be particularly attractive to **Achievers**, who are motivated by collecting difficult trophies.
-- A rule-based or ML-based recommendation system can:
-  - Suggest Achiever-friendly games to players with matching behavior patterns,
-  - Re-target players in segments where the model predicts a high probability of interest.
+- Negative relationship between **score** and **completion percentage**:
+  - As maximum score / trophies increase, completion percentage tends to decrease.
+  - This suggests a trade-off between **depth/complexity** and **full completion**.
 
-**Long-term possibilities:**
-
-- Building a **popularity-based recommendation system** using predicted ratings.
-- Expanding player segmentation beyond Achievers and incorporating other Bartle types.
-- Integrating behavioral logs or time-based activity data if available.
+- Decision Tree model performed best among the classification models in this setup, making it a practical choice for:
+  - Recommending games to Achiever-type players,
+  - Identifying segments likely to respond well to achievement-heavy design.
 
 ---
 
-## 🛠 Tech Stack
+## 5. Tech Stack
 
-- **Tools:** KNIME Analytics Platform  
-- **Techniques:**
-  - Exploratory Data Analysis (EDA)
-  - Linear Regression
-  - Logistic Regression
-  - Decision Trees
-  - K-Fold Cross Validation
+- **KNIME Analytics Platform**
+  - Data import and cleaning  
+  - EDA and visualization  
+  - Linear Regression, Logistic Regression, Decision Tree  
+  - K-Fold Cross Validation  
   - Forward Feature Selection
-- **Domain:** Game analytics, customer analytics, player behavior, recommendation logic
+
+- **In Progress (Planned / Ongoing):**
+  - Rebuilding core parts of this workflow in **Python (pandas, scikit-learn)** as part of:
+    - **YÖK Data Analysis School** modules:
+      - *Descriptive & Inferential Statistics*
+      - *Machine Learning & AI Fundamentals*
 
 ---
 
-## 📂 Repository Structure (Planned)
+## 6. Next Steps
 
-```text
-ps4-game-analytics-bartle-achievers/
-├── README.md
-├── presentation/
-│   └── ITU_BigData_PS4_Game_Analytics_DalidaDikici.pdf
-├── data/
-│   └── README_DATA.md  # Notes + Kaggle link
-├── notebooks/          # (optional) Jupyter notebooks for future work
-└── knime/              # (optional) KNIME workflow file (.knwf)
+- Add a **Python notebook** version of:
+  - Basic EDA on the PS4 dataset
+  - One regression model (rating prediction)
+  - One simple classification model (Achiever-friendly vs non-Achiever-oriented games)
+
+- Extend the recommendation logic to include:
+  - Player retention metrics
+  - Monetization KPIs (e.g., LTV, ARPDAU) on suitable datasets.
+
+---
+
+## 7. About Me
+
+I am a **Junior Data Analyst** with a background in **Physics, Mathematics, and Education**, transitioning from teaching and EdTech into **product, game, and behavioral analytics**.
+
+- Email: **dekbenli@gmail.com**  
+- LinkedIn: [Dalida Dikici](https://www.linkedin.com/in/dalida-dikici/)  
+- Location: Kuşadası, Türkiye
 
